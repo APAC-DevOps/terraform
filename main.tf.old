@@ -1,0 +1,46 @@
+provider "aws" {
+  access_key = "${var.access_key}"
+  secret_key = "${var.secret_key}"
+  region = "${var.aws_region}"
+}
+
+resource "aws_cloudformation_stack" "vpc_jhw" {
+
+  name = "VPC-JHW"
+  template_body = <<STACK
+  {
+    	"Resources": {
+        "VPCJHW": {
+          "Type": "AWS::EC2::VPC",
+          "Properties": {
+            "CidrBlock": "10.10.10.0/24",
+            "InstanceTenancy": "default",
+            "Tags": [
+      					{ "Key": "Name", "Value": "VPCJHW" }
+      				]
+      			}
+          },
+
+       "PublicRoutingSubnetZone1": {
+         "Type" : "AWS::EC2::Subnet",
+         "Properties" : {
+           "AvailabilityZone" : "ap-southeast-2a",
+           "CidrBlock" : "10.10.10.0/25",
+           "Tags" : [ { "Key": "Name", "Value": "PublicRoutingSubnetZone1"}],
+           "VpcId" : { "Ref" : "VPCJHW"}
+         }
+       },
+
+       "PublicRoutingSubnetZone2": {
+         "Type" : "AWS::EC2::Subnet",
+         "Properties" : {
+           "AvailabilityZone" : "ap-southeast-2b",
+           "CidrBlock" : "10.10.10.128/25",
+           "Tags" : [ { "Key": "Name", "Value": "PublicRoutingSubnetZone2"}],
+           "VpcId" : { "Ref" : "VPCJHW"}
+         }
+       }
+      }
+  }
+STACK
+}
